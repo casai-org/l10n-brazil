@@ -20,8 +20,6 @@ class Partner(models.Model):
     _name = "res.partner"
     _inherit = [_name, "l10n_br_base.party.mixin"]
 
-    vat = fields.Char(related="cnpj_cpf")
-
     is_accountant = fields.Boolean(string="Is accountant?")
 
     crc_code = fields.Char(string="CRC Code", size=18)
@@ -48,8 +46,8 @@ class Partner(models.Model):
 
             allow_cnpj_multi_ie = (
                 record.env["ir.config_parameter"]
-                .sudo()
-                .get_param("l10n_br_base.allow_cnpj_multi_ie", default=True)
+                    .sudo()
+                    .get_param("l10n_br_base.allow_cnpj_multi_ie", default=True)
             )
 
             if record.parent_id:
@@ -66,8 +64,8 @@ class Partner(models.Model):
                     if allow_cnpj_multi_ie == "True":
                         for partner in record.env["res.partner"].search(domain):
                             if (
-                                partner.inscr_est == record.inscr_est
-                                and not record.inscr_est
+                                    partner.inscr_est == record.inscr_est
+                                    and not record.inscr_est
                             ):
                                 raise ValidationError(
                                     _(
@@ -90,8 +88,8 @@ class Partner(models.Model):
         for record in self:
 
             disable_cnpj_ie_validation = record.env[
-                "ir.config_parameter"
-            ].sudo().get_param(
+                                             "ir.config_parameter"
+                                         ].sudo().get_param(
                 "l10n_br_base.disable_cpf_cnpj_validation", default=False
             ) or self.env.context.get(
                 "disable_cpf_cnpj_validation"

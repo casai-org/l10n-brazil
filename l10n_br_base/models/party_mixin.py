@@ -21,6 +21,10 @@ class PartyMixin(models.AbstractModel):
     cnpj_cpf = fields.Char(
         string="CNPJ/CPF",
         size=18,
+        tracking=True,
+        inverse="_inverse_cpf_vat",
+        compute="_compute_cpf_vat",
+        store=True,
     )
 
     inscr_est = fields.Char(
@@ -69,6 +73,18 @@ class PartyMixin(models.AbstractModel):
         string="District",
         size=32,
     )
+
+    @api.depends("vat")
+    def _compute_cpf_vat(self):
+        for record in self:
+            if record.country_id.id == self.env.ref("base.br").id:
+                if record.vat and not record.cnpj_cpf:
+                    record.cnpj_cpf = record.vat
+
+    def _inverse_cpf_vat(self):
+        for record in self:
+            if record.cnpj_cpf:
+                record.vat = record.cnpj_cpf
 
     @api.onchange("cnpj_cpf")
     def _onchange_cnpj_cpf(self):
